@@ -1,6 +1,8 @@
 ### Mint ERP
 
-Mint ERP
+Mint ERP is a custom Frappe/ERPNext application for extending Mint functionality.
+
+Developed and maintained by [Midocean Technologies Private Limited](https://midocean.tech/).
 
 ### Installation
 
@@ -28,6 +30,10 @@ Pre-commit is configured to use the following tools for checking and formatting 
 - prettier
 - pyupgrade
 
-### License
+Credits
+This application is developed and maintained by **Midocean Technologies Private Limited**.
 
+
+License
+### License
 mit
