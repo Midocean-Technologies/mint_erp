@@ -30,7 +30,7 @@ Pre-commit is configured to use the following tools for checking and formatting 
 - prettier
 - pyupgrade
 
-Credits
+### Credits
 This application is developed and maintained by **Midocean Technologies Private Limited**.
 
 
