@@ -183,6 +183,9 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
+override_whitelisted_methods = {
+	"frappe.desk.search.search_link": "mint_erp.mint_customer_display.search_link",
+}
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "mint_erp.event.get_events"
 # }
@@ -206,7 +209,7 @@ app_license = "mit"
 # Request Events
 # ----------------
 # before_request = ["mint_erp.utils.before_request"]
-# after_request = ["mint_erp.utils.after_request"]
+after_request = ["mint_erp.mint_customer_display.inject_mint_customer_display_script"]
 
 # Job Events
 # ----------
