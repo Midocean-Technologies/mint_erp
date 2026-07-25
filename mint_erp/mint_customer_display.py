@@ -3,12 +3,12 @@ import json
 import frappe
 from frappe.desk.search import search_link as standard_search_link
 
-SCRIPT_TAG = '<script src="/assets/mint_erp/js/mint_customer_display.js?v=customer_name_with_area_2"></script>'
+SCRIPT_TAG = '<script src="/assets/mint_erp/js/mint_customer_display.js?v=customer_name_with_area_banking_1"></script>'
 
 
 def _is_mint_request():
 	referer = frappe.get_request_header("Referer") or ""
-	return "/mint" in referer
+	return any(path in referer for path in ("/mint", "/banking"))
 
 
 def _as_list(value):
@@ -48,7 +48,7 @@ def get_customer_display_names(customer_ids=None):
 def inject_mint_customer_display_script(response=None, request=None):
 	if not response or not request:
 		return
-	if request.path != "/mint" and not request.path.startswith("/mint/"):
+	if not any(request.path == path or request.path.startswith(f"{path}/") for path in ("/mint", "/banking")):
 		return
 	if "text/html" not in (response.content_type or ""):
 		return

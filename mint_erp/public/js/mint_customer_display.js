@@ -1,8 +1,9 @@
 (function () {
-  if (!location.pathname.startsWith("/mint")) return;
+  if (!location.pathname.startsWith("/mint") && !location.pathname.startsWith("/banking")) return;
 
   const customerCache = new Map();
   const pendingIds = new Set();
+  const customerIdPattern = /\bCUST-\d{4}-\d{5}\b/g;
   let flushTimer = null;
 
   function markCustomerMeta(doc) {
@@ -150,6 +151,35 @@
     });
   }
 
+  function replaceCustomerIdsInTextNodes(scope) {
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        if (!parent || ["SCRIPT", "STYLE", "TEXTAREA", "INPUT"].includes(parent.tagName)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        customerIdPattern.lastIndex = 0;
+        return customerIdPattern.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      },
+    });
+
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+
+    nodes.forEach((node) => {
+      customerIdPattern.lastIndex = 0;
+      const ids = Array.from(new Set(node.nodeValue.match(customerIdPattern) || []));
+      const missingIds = ids.filter((id) => !customerCache.has(id));
+      if (missingIds.length) {
+        missingIds.forEach(queueCustomer);
+        return;
+      }
+
+      node.nodeValue = node.nodeValue.replace(customerIdPattern, (id) => customerCache.get(id) || id);
+      if (node.parentElement) node.parentElement.title = ids.join(", ");
+    });
+  }
+
   function replaceCustomerLabels(root) {
     const scope = root && root.querySelectorAll ? root : document;
 
@@ -180,6 +210,7 @@
     });
 
     replaceAgainstAccountTableColumns(scope);
+    replaceCustomerIdsInTextNodes(scope);
   }
 
   setCustomerMetaForMint();
